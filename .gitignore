@@ -2,3 +2,8 @@
 .idea/
 config/app_local.php
 vendor/
+logs/*
+tmp/cache/models/*
+!tmp/cache/models/.gitkeep
+tmp/cache/persistent/*
+!tmp/cache/persistent/.gitkeep
