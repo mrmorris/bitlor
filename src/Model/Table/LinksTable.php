@@ -43,6 +43,10 @@ class LinksTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->addBehavior('Sluggable', [
+            'field' => 'url'
+        ]);
+
         $this->addBehavior('Timestamp');
     }
 

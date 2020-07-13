@@ -12,94 +12,33 @@ namespace App\Controller;
 class LinksController extends AppController
 {
     /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|null|void Renders view
-     */
-    public function index()
-    {
-        $links = $this->paginate($this->Links);
-
-        $this->set(compact('links'));
-    }
-
-    /**
      * View method
      *
-     * @param string|null $id Link id.
+     * When a user attempts to access a link by its slug, route them to the correct url
+     *
+     * @param string|null $slug Link slug.
      * @return \Cake\Http\Response|null|void Renders view
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function view($slug = null)
     {
-        $link = $this->Links->get($id, [
-            'contain' => [],
-        ]);
+        $targetUrl = '/';
 
-        $this->set(compact('link'));
-    }
+        $link = $this->Links->find()
+            ->where([
+                'slug' => $slug
+            ])
+            ->order(['created' => 'desc'])
+            ->first();
 
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $link = $this->Links->newEmptyEntity();
-        if ($this->request->is('post')) {
-            $link = $this->Links->patchEntity($link, $this->request->getData());
-            if ($this->Links->save($link)) {
-                $this->Flash->success(__('The link has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The link could not be saved. Please, try again.'));
-        }
-        $this->set(compact('link'));
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Link id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $link = $this->Links->get($id, [
-            'contain' => [],
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $link = $this->Links->patchEntity($link, $this->request->getData());
-            if ($this->Links->save($link)) {
-                $this->Flash->success(__('The link has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The link could not be saved. Please, try again.'));
-        }
-        $this->set(compact('link'));
-    }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id Link id.
-     * @return \Cake\Http\Response|null|void Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $link = $this->Links->get($id);
-        if ($this->Links->delete($link)) {
-            $this->Flash->success(__('The link has been deleted.'));
-        } else {
-            $this->Flash->error(__('The link could not be deleted. Please, try again.'));
+        if (!empty($link)) {
+            // @todo this isn't very flexible; not only is it a fragile query, but
+            // we could derive this elsewhere
+            $link->views++;
+            $this->Links->save($link);
+            $targetUrl = $link->url;
         }
 
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect($link->url);
     }
 }

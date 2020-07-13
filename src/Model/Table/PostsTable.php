@@ -43,6 +43,8 @@ class PostsTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->addBehavior('LinkReplacer');
+
         $this->addBehavior('Timestamp');
     }
 
