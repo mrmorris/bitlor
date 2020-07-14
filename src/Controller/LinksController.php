@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Cake\Datasource\ConnectionManager;
+
 /**
  * Links Controller
  *
@@ -34,8 +36,14 @@ class LinksController extends AppController
         if (!empty($link)) {
             // @todo this isn't very flexible; not only is it a fragile query, but
             // we could derive this elsewhere
-            $link->views++;
-            $this->Links->save($link);
+            //$link->views++;
+            //$this->Links->save($link);
+
+            // @todo move this into the entity
+            $connection = ConnectionManager::get('default');
+            $connection
+                ->query('UPDATE links SET views = views + 1 WHERE id = ' . $link->id);
+
             $targetUrl = $link->url;
         }
 
