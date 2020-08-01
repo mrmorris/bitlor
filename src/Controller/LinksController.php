@@ -47,6 +47,12 @@ class LinksController extends AppController
             $targetUrl = $link->url;
         }
 
-        return $this->redirect($link->url);
+        return $this->redirect(
+            $link->url,
+            // temporary redirect
+            // why? because we don't want a requester to cache the target address
+            // and skip our "bitly" link in the future
+            307
+        );
     }
 }
